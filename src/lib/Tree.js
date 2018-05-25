@@ -191,7 +191,6 @@ export default class Tree {
   }
 
   static async mkdirpPath (path, rootId, allAccounts) {
-    console.log("mkdirpath: " + path);
     if (path === '/' || path === '') {
       return rootId
     }
@@ -200,7 +199,6 @@ export default class Tree {
       .split(/[/](?![\\])/)
       .reverse()
       .map(str => reverseStr(str))
-    console.log("patharr: ",  pathArr);
     let pathSegment = pathArr[1]
     let title = pathSegment.replace(/[\\][/]/g, '/')
 

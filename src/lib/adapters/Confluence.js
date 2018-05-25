@@ -23,50 +23,52 @@ export default class ConfluenceAdapter {
   renderOptions (ctl, rootPath) {
     let data = this.getData()
     const saveTimeout = 1000
-    let onchangeURL = (e) => {
+    let onchangeURL = (e, now) => {
+      if (now) {
+        return ctl.update({...data, url: e.target.value});
+      }
       if (this.saveTimeout) clearTimeout(this.saveTimeout)
-      this.saveTimeout = setTimeout(() => ctl.update({...data, url: e.target.value}), saveTimeout)
+      this.saveTimeout = setTimeout(() => ctl.update({...data, url: e.target.value}), saveTimeout);
     }
-    let onchangeUsername = (e) => {
+    let onchangeUsername = (e, now) => {
+      if (now) {
+        return ctl.update({...data, username: e.target.value})
+      }
       if (this.saveTimeout) clearTimeout(this.saveTimeout)
       this.saveTimeout = setTimeout(() => ctl.update({...data, username: e.target.value}), saveTimeout)
     }
-    let onchangePassword = (e) => {
+    let onchangePassword = (e, now) => {
+      if (now) {
+        return ctl.update({...data, password: e.target.value})
+      }
       if (this.saveTimeout) clearTimeout(this.saveTimeout)
-      console.log("onchange password");
       this.saveTimeout = setTimeout(() => ctl.update({...data, password: e.target.value}), saveTimeout)
     }
-    let onchangePageId = (e) => {
-
+    let onchangePageId = (e, now) => {
+      if (now) {
+        return ctl.update({...data, pageId: e.target.value})
+      }
       if (this.saveTimeout) clearTimeout(this.saveTimeout)
-      this.saveTimeout = setTimeout(() => {
-        console.log("setting timeout?");
-        // let val = e.target.value
-        // if (val[val.length - 1] === '/') {
-        //   val = val.substr(0,  val.length - 1)
-        //   e.target.value = val
-        // }
-        ctl.update({...data, pageId: e.target.value})
-      }, saveTimeout)
+      this.saveTimeout = setTimeout(() => ctl.update({...data, pageId: e.target.value}), saveTimeout)
     }
     return <div className="account">
       <form>
         <table>
           <tr>
             <td><label for="url">Confluence URL:</label></td>
-            <td><input value={new InputInitializeHook(data.url)} type="text" className="url" name="url" ev-keyup={onchangeURL} ev-blur={onchangeURL}/></td>
+            <td><input value={new InputInitializeHook(data.url)} type="text" className="url" name="url" placeholder="Example: example.atlassian.net" ev-keyup={onchangeURL} ev-blur={(e) => onchangeURL(e, true)}/></td>
           </tr>
           <tr>
             <td><label for="username">User name:</label></td>
-            <td><input value={new InputInitializeHook(data.username)} type="text" className="username" name="username" ev-keyup={onchangeUsername} ev-blur={onchangeUsername}/></td>
+            <td><input value={new InputInitializeHook(data.username)} type="text" className="username" name="username" placeholder="Example: foo@example.com" ev-keyup={(e) => onchangeUsername(e, true)} ev-blur={onchangeUsername}/></td>
           </tr>
           <tr>
-            <td><label for="password">API Token:</label></td>
-            <td><input value={new InputInitializeHook(data.password)} type="text" className="password" name="password" ev-keydown={onchangePassword} ev-blur={onchangePassword}/></td>
+            <td><label for="password">API token:</label></td>
+            <td><input value={new InputInitializeHook(data.password)} type="password" className="password" name="password" placeholder="" ev-keydown={(e) => onchangePassword(e, true)} ev-blur={onchangePassword}/></td>
           </tr>
           <tr>
             <td><label for="pageId">Page ID:</label></td>
-            <td><input value={new InputInitializeHook(data.pageId || '')} type="text" className="pageId" name="pageId" placeholder="Example: 8675309" ev-keyup={onchangePageId} ev-blur={onchangePageId}/></td>
+            <td><input value={new InputInitializeHook(data.pageId || '')} type="text" className="pageId" name="pageId" placeholder="Example: 8675309" ev-keyup={onchangePageId} ev-blur={(e) => onchangePageId(e, true)}/></td>
           </tr>
           <tr><td></td><td>
             <span className="status">{
@@ -74,7 +76,7 @@ export default class ConfluenceAdapter {
                 ? '↻ Syncing...'
                 : (data.error
                   ? <span>✘ Error!</span>
-                  : <span>✓ all good</span>
+                  : <span>✓ All good</span>
                 )
             }</span>
             <a href="#" className="btn openOptions" ev-click={(e) => {
@@ -203,7 +205,6 @@ export default class ConfluenceAdapter {
   async loadBookmarks() {
     const getUrl = ConfluenceAdapter.getContentURL(this.server.url, this.server.pageId)
       + '?expand=body.atlas_doc_format,version,body.storage'
-    console.log("load url ", this.server.url, ' ', getUrl);
     var response
     try {
       response = await fetch(getUrl, {
@@ -232,12 +233,10 @@ export default class ConfluenceAdapter {
       console.log("Detected dirty bookmarks, saving with new ids")
       await this.saveBookmarks(bookmarks, json)
     }
-    console.log("bookmarks: ", bookmarks);
     return [bookmarks, json]
   }
 
   async saveBookmarks (bookmarks, body) {
-    console.log("saving bookmarks: " + JSON.stringify(bookmarks));
     let doc = ConfluenceAdapter.bookmarksToStorageFormatString(bookmarks);
     if (doc === body.body.storage.value) {
       console.log("No change detected, skipping saving")
@@ -270,8 +269,6 @@ export default class ConfluenceAdapter {
       console.log("res body: " + txt)
       throw new Error('Saving a bookmark on the server failed: ' + bm.url)
     }
-    let txt = await res.text()
-    console.log("res body: " + txt)
     console.log("bookmarks saved successfully")
   }
 
@@ -281,7 +278,6 @@ export default class ConfluenceAdapter {
     let lastHeadingLevel = 0;
     let dirty = false;
     doc.content.forEach((item) => {
-      console.log("item: " + JSON.stringify(item));
       if ("bulletList" === item.type) {
         item.content.forEach((listItem) => {
           let title, link, id
@@ -290,7 +286,6 @@ export default class ConfluenceAdapter {
             link = listItem.content[0].content[0].marks[0].attrs.href;
           } else if (listItem.content[0].type === "confluenceUnsupportedInline") {
             let xml = new DOMParser().parseFromString(listItem.content[0].attrs.cxhtml, "text/xml");
-            console.log("parsed xml: ", listItem.content[0])
             link = decodeURI(xml.documentElement.getAttribute("href"))
             title = xml.documentElement.textContent
           }
@@ -359,7 +354,6 @@ export default class ConfluenceAdapter {
     if (items.length) {
       result += "<ul>" + items.join("") + "</ul>";
     }
-    console.log("storage format: ", result);
     return result;
   }
 

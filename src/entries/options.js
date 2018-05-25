@@ -111,10 +111,10 @@ function renderAccounts (accounts, secured) {
     <a href="" className="btn" id="addaccount" ev-click={() => {
       Account.create({
         type: 'confluence'
-        , url: 'https://example.atlassian.net/wiki'
-        , username: 'bob@example.com'
-        , password: 'password'
-        , pageId: '12345'
+        , url: ''
+        , username: ''
+        , password: ''
+        , pageId: ''
         , serverRoot: ''
       })
         .then(() => triggerRender())

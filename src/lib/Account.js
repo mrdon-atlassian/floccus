@@ -169,7 +169,6 @@ export default class Account {
         console.error('Syncing failed with', combinedMessage)
         await this.setData({...this.getData(), error: combinedMessage, syncing: false})
       } else {
-        console.log(e)
         console.error('Syncing failed with', e)
         await this.setData({...this.getData(), error: e.message, syncing: false})
       }
@@ -255,7 +254,6 @@ export default class Account {
             return
           }
 
-          console.log("localmark dirty: " + localMark.dirty)
           if (!localMark.dirty) {
           // LOCALUPDATE
             await this.tree.updateNode(serverMark)

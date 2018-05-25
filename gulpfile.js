@@ -3,7 +3,6 @@ var browserify = require('browserify')
 var babelify = require('babelify')
 var tap = require('gulp-tap')
 var zip = require('gulp-zip')
-var webext = require('web-ext').default
 
 const VERSION = require('./package.json').version
 const paths = {
@@ -67,13 +66,13 @@ gulp.task('release', ['zip', 'xpi'])
 
 gulp.task('zip', ['default'], function () {
   gulp.src(paths.zip)
-    .pipe(zip(`floccus-build-v${VERSION}.zip`))
+    .pipe(zip(`confluence-bookmarks-build-v${VERSION}.zip`))
     .pipe(gulp.dest('../'))
 })
 
 gulp.task('xpi', ['default'], function () {
   gulp.src(paths.zip)
-    .pipe(zip(`floccus-build-v${VERSION}.xpi`))
+    .pipe(zip(`confluence-bookmarks-build-v${VERSION}.xpi`))
     .pipe(gulp.dest('../'))
 })
 
@@ -83,6 +82,7 @@ gulp.task('watch', function () {
 })
 
 gulp.task('web-ext', function () {
+  var webext = require('web-ext').default
   gulp.src(paths.zip)
     .pipe(gulp.dest('.tmp-dist'))
 
