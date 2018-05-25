@@ -10,7 +10,7 @@ This installation assumes you have an instance of Confluence Cloud active and av
 
 **Note:** It is recommended to not enable native bookmark synchronization built into your browser, as it is known to cause issues.
 
-The extension is available at for file installation on [EAC](https://extranet.atlassian.com/display/~don@atlassian.com/Confluence+Bookmarks+Browser+Extension)
+The extension is available for file installation on [EAC](https://extranet.atlassian.com/display/~don@atlassian.com/Confluence+Bookmarks+Browser+Extension)
 
 
 ## Usage
