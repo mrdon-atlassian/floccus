@@ -3,23 +3,21 @@
 // All confluence specific stuff goes in here
 import Bookmark from '../Bookmark'
 import humanizeDuration from 'humanize-duration'
-const Parallel = require('async-parallel')
 
 const {h} = require('virtual-dom')
 
 function el (el, props, ...children) {
   return h(el, props, children)
-};
+}
 
 const url = require('url')
 const reverseStr = (str) => str.split('').reverse().join('')
-
-const TAG_PREFIX = 'floccus:'
 
 export default class ConfluenceAdapter {
   constructor (server) {
     this.server = server
     this.cache = null;
+    this.serverRoot = "";
   }
 
   renderOptions (ctl, rootPath) {
@@ -38,7 +36,7 @@ export default class ConfluenceAdapter {
       console.log("onchange password");
       this.saveTimeout = setTimeout(() => ctl.update({...data, password: e.target.value}), saveTimeout)
     }
-    let onchangeServerRoot = (e) => {
+    let onchangePageId = (e) => {
 
       if (this.saveTimeout) clearTimeout(this.saveTimeout)
       this.saveTimeout = setTimeout(() => {
@@ -48,14 +46,14 @@ export default class ConfluenceAdapter {
         //   val = val.substr(0,  val.length - 1)
         //   e.target.value = val
         // }
-        ctl.update({...data, serverRoot: e.target.value})
+        ctl.update({...data, pageId: e.target.value})
       }, saveTimeout)
     }
     return <div className="account">
       <form>
         <table>
           <tr>
-            <td><label for="url">Confluence server URL:</label></td>
+            <td><label for="url">Confluence URL:</label></td>
             <td><input value={new InputInitializeHook(data.url)} type="text" className="url" name="url" ev-keyup={onchangeURL} ev-blur={onchangeURL}/></td>
           </tr>
           <tr>
@@ -67,8 +65,8 @@ export default class ConfluenceAdapter {
             <td><input value={new InputInitializeHook(data.password)} type="text" className="password" name="password" ev-keydown={onchangePassword} ev-blur={onchangePassword}/></td>
           </tr>
           <tr>
-            <td><label for="serverRoot">Page ID:</label></td>
-            <td><input value={new InputInitializeHook(data.serverRoot || '')} type="text" className="serverRoot" name="serverRoot" placeholder="Default: page ID  Example: 8675309" ev-keyup={onchangeServerRoot} ev-blur={onchangeServerRoot}/></td>
+            <td><label for="pageId">Page ID:</label></td>
+            <td><input value={new InputInitializeHook(data.pageId || '')} type="text" className="pageId" name="pageId" placeholder="Example: 8675309" ev-keyup={onchangePageId} ev-blur={onchangePageId}/></td>
           </tr>
           <tr><td></td><td>
             <span className="status">{
@@ -132,21 +130,21 @@ export default class ConfluenceAdapter {
 
   getLabel () {
     let data = this.getData()
-    return data.username + '@' + data.url
+    return data.url
   }
 
-  normalizeServerURL (input) {
-    // let serverURL = url.parse(input)
-    // let indexLoc = serverURL.pathname.indexOf('wiki')
-    // return url.format({
-    //   protocol: serverURL.protocol
-    //   , auth: serverURL.auth
-    //   , host: serverURL.host
-    //   , port: serverURL.port
-    //   , pathname: serverURL.pathname.substr(0, ~indexLoc ? indexLoc : undefined) +
-    //             (!~indexLoc && serverURL.pathname[serverURL.pathname.length - 1] !== '/' ? '/' : '')
-    // })
-    return input;
+  static getContentURL (input, pageId) {
+    if (!input.startsWith("http")) {
+      input = "https://" + input;
+    }
+    let serverURL = url.parse(input)
+    return url.format({
+      protocol: serverURL.protocol || "https"
+      , auth: serverURL.auth
+      , host: serverURL.host
+      , port: serverURL.port
+      , pathname: "/wiki/rest/api/content/" + pageId
+    })
   }
 
   async syncStarted() {
@@ -203,8 +201,9 @@ export default class ConfluenceAdapter {
   }
 
   async loadBookmarks() {
-    const getUrl = this.normalizeServerURL(this.server.url)
+    const getUrl = ConfluenceAdapter.getContentURL(this.server.url, this.server.pageId)
       + '?expand=body.atlas_doc_format,version,body.storage'
+    console.log("load url ", this.server.url, ' ', getUrl);
     var response
     try {
       response = await fetch(getUrl, {
@@ -248,7 +247,7 @@ export default class ConfluenceAdapter {
     delete body.body.atlas_doc_format;
     body.version.number += 1;
 
-    const saveUrl = this.normalizeServerURL(this.server.url);
+    const saveUrl = ConfluenceAdapter.getContentURL(this.server.url, this.server.pageId);
     var res
     try {
       res = await fetch(saveUrl, {

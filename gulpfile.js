@@ -3,6 +3,7 @@ var browserify = require('browserify')
 var babelify = require('babelify')
 var tap = require('gulp-tap')
 var zip = require('gulp-zip')
+var webext = require('web-ext').default
 
 const VERSION = require('./package.json').version
 const paths = {
@@ -80,3 +81,27 @@ gulp.task('watch', function () {
   gulp.watch(paths.js, ['js'])
   gulp.watch(paths.views, ['html'])
 })
+
+gulp.task('web-ext', function () {
+  gulp.src(paths.zip)
+    .pipe(gulp.dest('.tmp-dist'))
+
+  webext.cmd.sign({
+    // These are command options derived from their CLI conterpart.
+    // In this example, --source-dir is specified as sourceDir.
+    sourceDir: '.tmp-dist',
+
+  }, {
+    // These are non CLI related options for each function.
+    // You need to specify this one so that your NodeJS application
+    // can continue running after web-ext is finished.
+    shouldExitProgram: false,
+  }).then((extensionRunner) => {
+    // The command has finished. Each command resolves its
+    // promise with a different value.
+    console.log(extensionRunner);
+    // You can do a few things like:
+    // extensionRunner.reloadAllExtensions();
+    // extensionRunner.exit();
+  });
+});

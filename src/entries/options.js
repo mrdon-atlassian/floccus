@@ -112,8 +112,9 @@ function renderAccounts (accounts, secured) {
       Account.create({
         type: 'confluence'
         , url: 'https://example.atlassian.net/wiki'
-        , username: 'bob'
+        , username: 'bob@example.com'
         , password: 'password'
+        , pageId: '12345'
         , serverRoot: ''
       })
         .then(() => triggerRender())
