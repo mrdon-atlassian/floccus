@@ -1,21 +1,21 @@
 {
   "name": "floccus",
   "version": "2.2.3",
-  "description": "Sync your bookmarks with nextcloud",
+  "description": "Sync your bookmarks with Confluence",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/marcelklehr/floccus.git"
+    "url": "git+https://github.com/mrdon-atlassian/floccus.git"
   },
   "author": "",
   "license": "MPL-2.0",
   "bugs": {
-    "url": "https://github.com/marcelklehr/floccus/issues"
+    "url": "https://github.com/mrdon-atlassian/floccus/issues"
   },
-  "homepage": "https://github.com/marcelklehr/floccus#readme",
+  "homepage": "https://github.com/mrdon-atlassian/floccus#readme",
   "devDependencies": {
     "babel-plugin-syntax-jsx": "^6.18.0",
     "babel-plugin-transform-async-to-generator": "^6.24.1",

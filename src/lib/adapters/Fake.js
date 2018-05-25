@@ -79,4 +79,11 @@ export default class FakeAdapter {
   async removeBookmark (remoteId) {
     this.db.delete(remoteId)
   }
+  syncStarted () {
+    // no-op
+  }
+
+  syncCompleted () {
+    // no-op
+  }
 }

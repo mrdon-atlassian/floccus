@@ -101,7 +101,7 @@ export default class Account {
       let parentNode = await browser.bookmarks.getTree()
       let bookmarksBar = parentNode[0].children[0]
       let node = await browser.bookmarks.create({
-        title: 'Nextcloud (' + this.getLabel() + ')'
+        title: 'Confluence (' + this.getLabel() + ')'
         , parentId: bookmarksBar.id
       })
       accData.localRoot = node.id
@@ -133,7 +133,7 @@ export default class Account {
       }
 
       // main sync steps:
-
+      await this.server.syncStarted()
       let mappings = await this.storage.getMappings()
       await this.tree.load(mappings)
 
@@ -160,6 +160,7 @@ export default class Account {
 
       await this.tree.removeOrphanedFolders()
 
+      await this.server.syncCompleted()
       await this.setData({...this.getData(), error: null, syncing: false, lastSync: Date.now()})
       console.log('Successfully ended sync process for account ' + this.getLabel())
     } catch (e) {
@@ -254,6 +255,7 @@ export default class Account {
             return
           }
 
+          console.log("localmark dirty: " + localMark.dirty)
           if (!localMark.dirty) {
           // LOCALUPDATE
             await this.tree.updateNode(serverMark)

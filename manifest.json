@@ -3,7 +3,7 @@
   "name": "floccus",
   "short_name": "floccus",
   "version": "2.2.3",
-  "description": "Sync your bookmarks with nextcloud",
+  "description": "Sync your bookmarks with Confluence",
   "icons": {
     "48": "icons/logo.png"
   },

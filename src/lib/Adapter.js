@@ -1,4 +1,5 @@
 import NextcloudAdapter from './adapters/Nextcloud'
+import ConfluenceAdapter from './adapters/Confluence'
 import FakeAdapter from './adapters/Fake'
 
 export default class Adapter {
@@ -7,6 +8,9 @@ export default class Adapter {
     switch (data.type) {
       case 'nextcloud':
         adapter = new NextcloudAdapter(data)
+        break
+      case 'confluence':
+        adapter = new ConfluenceAdapter(data)
         break
       case 'fake':
         adapter = new FakeAdapter(data)
@@ -54,6 +58,14 @@ export default class Adapter {
   }
 
   removeBookmark () {
+    throw new Error('Not implemented')
+  }
+
+  syncStarted () {
+    throw new Error('Not implemented')
+  }
+
+  syncCompleted () {
     throw new Error('Not implemented')
   }
 }

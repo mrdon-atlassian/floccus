@@ -110,8 +110,8 @@ function renderAccounts (accounts, secured) {
     }</div>
     <a href="" className="btn" id="addaccount" ev-click={() => {
       Account.create({
-        type: 'nextcloud'
-        , url: 'http://example.org'
+        type: 'confluence'
+        , url: 'https://example.atlassian.net/wiki'
         , username: 'bob'
         , password: 'password'
         , serverRoot: ''
