@@ -146,7 +146,7 @@ function wrapOverlay (fn) {
 function renderSetKey (data) {
   return wrapOverlay(() => {
     return <div id="setKey">
-      <h2>Set a passphrase for floccus</h2>
+      <h2>Set a passphrase for Confluence Bookmarks</h2>
       <p>{state.setKey.error ? state.setKey.error : ''}</p>
       <input value={new InputInitializeHook('')} type="password" className="unlockKey" placeholder="Enter your unlock passphrase" />
       <input value={new InputInitializeHook('')} type="password" className="unlockKey" placeholder="Enter passphrase a second time" />
@@ -169,7 +169,7 @@ function renderSetKey (data) {
 function renderUnlock () {
   return wrapOverlay(() => {
     return <div id="unlock">
-      <h2>Unlock floccus</h2>
+      <h2>Unlock Confluence Bookmarks</h2>
       <input value={new InputInitializeHook('')} type="password" className="unlockKey" placeholder="Enter your unlock passphrase" />
       <a className="btn" href="#" ev-click={(e) => {
         e.preventDefault()
